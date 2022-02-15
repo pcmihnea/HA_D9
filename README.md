@@ -14,7 +14,7 @@ As such, no direct solution regarding third-party integration is readily availab
 Since reverse-engineering software may pose a infringement on copyrights, no binary files or dissasembly workspaces data is included in this repo.  
 Instead, it is fully up to the responsibility of the user whether to reproduce the results.  
 
-### 2.1. Extract the firmware
+### 1.1. Extract the firmware
 - By analysing the PCB inside the device, several components can be identified: a [GD32F103](https://www.gigadevice.com/products/microcontrollers/gd32/arm-cortex-m3/mainstream-line/gd32f103-series/) MCU (clone of a [STM32F103](https://www.st.com/en/microcontrollers-microprocessors/stm32f103rc.html)), several athmospheric sensors with no clear markings, a socketed battery, LCD screen connector, and miscellaneous circuits (power, clocking). The cables soldered are part of the hardware modifications covered in this repo.  
 <br><img src="docs/media/pcb_topside.png" width="400"/>
 <img src="docs/media/pcb_bottomside.png" width="400"/><br>
@@ -32,7 +32,7 @@ Instead, it is fully up to the responsibility of the user whether to reproduce t
 - Copy-paste the contents of the resulting file [`output/jlink_cmd_gen.txt`](scripts/output/jlink_cmd_gen.txt) into the J-Link Commander window - a number of binary files shall be saved in the same folder.  
 - Run the script [`jlink_bin_merge.py`](scripts/jlink_bin_merge.py) to merge all the binary files into a single file [`full_rom_dump.bin`](scripts/output/full_rom_dump.bin).  
 
-### 2.2. Analyse the extracted firmware
+### 1.2. Analyse the extracted firmware
 - To disassemble the file, [Ghidra](https://github.com/NationalSecurityAgency/ghidra) will be used, as it is the best (and free) solution currently available.  
 - Create a new project, and import the [`full_rom_dump.bin`](scripts/output/full_rom_dump.bin) file as a `ARM v7 little endian` binary image, assigning the block name `ROM` and startup address `0x8000000`.
 - Open the imported file in Ghidra's CodeBrowser, then open the `Memory Map` window avaiable in the `Window` drop-down menu.  
@@ -60,7 +60,7 @@ Instead, it is fully up to the responsibility of the user whether to reproduce t
 	- `0x20000116` for TVOC in 0.001 mg/m^3.
 
 
-### 2.3. Sampling the measurement values
+### 1.3. Sampling the measurement values
 - Once the RAM addresses and sizes of the measurement values are determined, they can be read anytime during normal MCU runtime.  
 - A [PyOCD-compatible](https://pyocd.io/docs/debug_probes.html) Kitprog2/3 debug probe was used in CMSIS-DAP mode, due to its several advantages (size, reliability, cost) - it may be required to [update to the latest firmware](https://github.com/Infineon/Firmware-loader). 
 - The Kitprog's SWD lines (`GND`, `SWCLK`, `SWDIO`) are connected to the D9 debug connector, while the USB power/data lines are connected directly to the D9's micro-USB socket - remove resistors `R11` and `R16`.  
@@ -72,7 +72,7 @@ Instead, it is fully up to the responsibility of the user whether to reproduce t
 - Once hardware setup is complete, the D9 can be connected to the host PC via it's USB socket, now enumerating as a CMSIS-DAP device.  
 - Debug operations, such as reading RAM/ROM memory contents, can be accomplished with any compatible software, notably [PyOCD](https://pyocd.io/).  
 
-## 3. Configure the data relay
+## 2. Configure the data relay
 Since the Python script relies on non-standard libraries, a [Home Assistant Docker installation](https://www.home-assistant.io/installation/linux#install-home-assistant-container) is assumed to be already working.  
 Also, a MQTT broker (for example Mosquitto) is also [installed](https://mosquitto.org/download), [configured](https://mosquitto.org/man/mosquitto-conf-5.html) and [accesible in HA](https://www.home-assistant.io/docs/mqtt/broker).  
 
@@ -81,7 +81,7 @@ Also, a MQTT broker (for example Mosquitto) is also [installed](https://mosquitt
 - Run the Python script as root: `sudo python3 mqtt_d9.py`.  
 - (Optional) Configure the script to run at startup, for example by adding it to `/etc/rc.local`.  
 
-## 4. Configure the HomeAssistant instance
+## 3. Configure the HomeAssistant instance
 - Add the following lines in `configuration.yaml` file (present inside the user-defined `homeassistant` configuration folder).  
 Take note of the `state_topic` value, where `d9` is a example that shall be subtituted with the exact value of `MQTT_CLIENT_ID` parameter set at step 3.  
 
