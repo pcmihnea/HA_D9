@@ -1,0 +1,6 @@
+| USAGE			| PIN	| PERIPHERAL	|
+|---------------|-------|---------------|
+| BTN_LEFT		| PA8	| 				|
+| BTN_MIDDLE	| PC9	| 				|
+| BTN_RIGHT		| PC8	| 				|
+| LCD_PWM		| PA7	| TIMER2_CH1	|
