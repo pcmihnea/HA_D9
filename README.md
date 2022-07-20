@@ -91,54 +91,7 @@ As a alternative, a separate PC can also be used for interfacing to the D9.
 - Run the [Python script](scripts/mqtt_d9.py) as root: `sudo python3 mqtt_d9.py`.  
 
 ## 3. Configure the HomeAssistant instance
-Add the following lines in `configuration.yaml` file (present inside the user-defined `homeassistant` configuration folder):  
-
-```
-sensor:
-  - platform: mqtt
-    name: TEMP
-    unique_id: "d9_temp"
-    state_topic: "d9/sensors/TEMP"
-    device_class: temperature
-    unit_of_measurement: "°C"
-  - platform: mqtt
-    name: HUMID
-    unique_id: "d9_humid"
-    state_topic: "d9/sensors/HUMID"
-    device_class: humidity
-    unit_of_measurement: "%"
-  - platform: mqtt
-    name: PM25
-    unique_id: "d9_pm25"
-    state_topic: "d9/sensors/PM25"
-    device_class: pm25
-    unit_of_measurement: "ug/m³"
-  - platform: mqtt
-    name: PM10
-    unique_id: "d9_pm10"
-    state_topic: "d9/sensors/PM10"
-    device_class: pm10
-    unit_of_measurement: "ug/m³"
-  - platform: mqtt
-    name: CO2
-    unique_id: "d9_co2"
-    state_topic: "d9/sensors/CO2"
-    device_class: carbon_dioxide
-    unit_of_measurement: "ppm"
-  - platform: mqtt
-    name: HCHO
-    unique_id: "d9_hcho"
-    state_topic: "d9/sensors/HCHO"
-    device_class: volatile_organic_compounds
-    unit_of_measurement: "mg/m³"
-  - platform: mqtt
-    name: TVOC
-    unique_id: "d9_tvoc"
-    state_topic: "d9/sensors/TVOC"
-    device_class: volatile_organic_compounds
-    unit_of_measurement: "mg/m³"
-```
-- If all is well, after a HA restart the newly created sensors shall be available.
+User configuration is not necessary, as [MQTT auto-discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is implemented.  
 
 # Who/where/when?
 All the reverse-engineering, development, integration, and documentation efforts are based on the latest software and hardware versions available at the time of writing (July 2022), and licensed under the GNU General Public License v3.0.
