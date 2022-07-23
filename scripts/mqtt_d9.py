@@ -23,6 +23,44 @@ def mqtt_publish(topic, payload, retain):
                    topic=topic, payload=json.dumps(payload), retain=retain)
 
 
+def mqtt_discovery(sn):
+    dev_cfg = {"name": '',
+               "state_topic": 'homeassistant/sensor/D9/state',
+               "value_template": '',
+               "device_class": '',
+               "unit_of_measurement": ''}
+    unique_id = 0
+    for device in PRIVATE_CONFIG['D9']['SENSORS'].keys():
+        if 'TEMP' == device:
+            dev_cfg['device_class'] = 'temperature'
+            dev_cfg['unit_of_measurement'] = '°C'
+        elif 'HUMID' == device:
+            dev_cfg['device_class'] = 'humidity'
+            dev_cfg['unit_of_measurement'] = '%'
+        elif 'PM25' == device:
+            dev_cfg['device_class'] = 'pm25'
+            dev_cfg['unit_of_measurement'] = 'ug/m³'
+        elif 'PM10' == device:
+            dev_cfg['device_class'] = 'pm10'
+            dev_cfg['unit_of_measurement'] = 'ug/m³'
+        elif 'CO2' == device:
+            dev_cfg['device_class'] = 'carbon_dioxide'
+            dev_cfg['unit_of_measurement'] = 'PPM'
+        elif 'HCHO' == device:
+            dev_cfg['device_class'] = 'volatile_organic_compounds'
+            dev_cfg['unit_of_measurement'] = 'mg/m³'
+        elif 'TVOC' == device:
+            dev_cfg['device_class'] = 'volatile_organic_compounds'
+            dev_cfg['unit_of_measurement'] = 'mg/m³'
+        else:
+            continue
+        dev_cfg['name'] = 'D9_' + device
+        dev_cfg['value_template'] = '{{ value_json.' + device + ' }}'
+        dev_cfg['unique_id'] = sn + str(unique_id)
+        unique_id += 1
+        mqtt_publish('homeassistant/sensor/D9_' + device + '/config', dev_cfg, True)
+
+
 if __name__ == '__main__':
     try:
         f = open('private_config.json')
@@ -31,40 +69,10 @@ if __name__ == '__main__':
         f.close()
         if bool(PRIVATE_CONFIG['MQTT']):
             pass
-        dev_cfg = {"name": '',
-                   "state_topic": 'homeassistant/sensor/D9/state',
-                   "value_template": '',
-                   "device_class": '',
-                   "unit_of_measurement": ''}
-        for sensor in PRIVATE_CONFIG['D9']['SENSORS'].keys():
-            if 'TEMP' == sensor:
-                dev_cfg['device_class'] = 'temperature'
-                dev_cfg['unit_of_measurement'] = '°C'
-            elif 'HUMID' == sensor:
-                dev_cfg['device_class'] = 'humidity'
-                dev_cfg['unit_of_measurement'] = '%'
-            elif 'PM25' == sensor:
-                dev_cfg['device_class'] = 'pm25'
-                dev_cfg['unit_of_measurement'] = 'ug/m³'
-            elif 'PM10' == sensor:
-                dev_cfg['device_class'] = 'pm10'
-                dev_cfg['unit_of_measurement'] = 'ug/m³'
-            elif 'CO2' == sensor:
-                dev_cfg['device_class'] = 'carbon_dioxide'
-                dev_cfg['unit_of_measurement'] = 'PPM'
-            elif 'HCHO' == sensor:
-                dev_cfg['device_class'] = 'volatile_organic_compounds'
-                dev_cfg['unit_of_measurement'] = 'mg/m³'
-            elif 'TVOC' == sensor:
-                dev_cfg['device_class'] = 'volatile_organic_compounds'
-                dev_cfg['unit_of_measurement'] = 'mg/m³'
-            else:
-                continue
-            dev_cfg['name'] = 'D9_' + sensor
-            dev_cfg['value_template'] = '{{ value_json.' + sensor + ' }}'
-            mqtt_publish('homeassistant/sensor/D9_' + sensor + '/config', dev_cfg, True)
         with ConnectHelper.session_with_chosen_probe(
                 options={'target_override': 'gd32f103rc', 'connect_mode': 'attach', 'frequency': 1000000}) as session:
+            print(session.probe.unique_id)
+            mqtt_discovery(sn=session.probe.unique_id)
             session.target.write32(ADDRESS_BACKLIGHT_LEVEL, VALUE_BACKLIGHT_DIS)
             while session.is_open:
                 start_time = time.time()
