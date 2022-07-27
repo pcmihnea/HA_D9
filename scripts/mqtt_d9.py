@@ -72,7 +72,6 @@ if __name__ == '__main__':
             pass
         with ConnectHelper.session_with_chosen_probe(
                 options={'target_override': 'gd32f103rc', 'connect_mode': 'attach', 'frequency': 1000000}) as session:
-            print(session.probe.unique_id)
             mqtt_discovery(sn=session.probe.unique_id)
             session.target.write32(ADDRESS_BACKLIGHT_LEVEL, VALUE_BACKLIGHT_DIS)
             while session.is_open:
