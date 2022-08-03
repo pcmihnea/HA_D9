@@ -64,12 +64,14 @@ def mqtt_discovery(sn):
 
 if __name__ == '__main__':
     try:
+        logging.info('INIT')
         f = open('private_config.json')
         PRIVATE_CONFIG = json.load(f)
         sensor_values = {}
         f.close()
         if bool(PRIVATE_CONFIG['MQTT']):
             pass
+        logging.info('LOOP')
         with ConnectHelper.session_with_chosen_probe(
                 options={'target_override': 'gd32f103rc', 'connect_mode': 'attach', 'frequency': 1000000}) as session:
             mqtt_discovery(sn=session.probe.unique_id)
@@ -84,7 +86,7 @@ if __name__ == '__main__':
                 mqtt_publish('homeassistant/sensor/D9/state', sensor_values, False)
                 time.sleep(PRIVATE_CONFIG['D9']['SAMPLE_INTERVAL'] - (time.time() - start_time))
     except Exception:
-        logging.exception('Exception')
+        logging.exception('EXCEPTION')
     try:
         session.target.write32(ADDRESS_BACKLIGHT_LEVEL, VALUE_BACKLIGHT_EN)
     except Exception:
