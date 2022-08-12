@@ -32,7 +32,7 @@ def mqtt_discovery(sn):
                "value_template": '',
                "device_class": '',
                "unit_of_measurement": '',
-               "expire_after": 600}
+               "expire_after": sample_interval * 2}
     unique_id = 0
     for device in PRIVATE_CONFIG['D9']['SENSORS'].keys():
         if 'TEMP' == device:
@@ -74,6 +74,7 @@ if __name__ == '__main__':
         f.close()
         if bool(PRIVATE_CONFIG['MQTT']):
             pass
+        sample_interval = PRIVATE_CONFIG['D9']['SAMPLE_INTERVAL']
         logging.info('LOOP')
         with ConnectHelper.session_with_chosen_probe(
                 options={'target_override': 'gd32f103rc', 'connect_mode': 'attach', 'frequency': 1000000}) as session:
@@ -87,7 +88,7 @@ if __name__ == '__main__':
                               PRIVATE_CONFIG['D9']['SENSORS'][sensor][INDEX_SCALE],
                               PRIVATE_CONFIG['D9']['SENSORS'][sensor][INDEX_DECIMALS])
                 mqtt_publish('homeassistant/sensor/D9/state', sensor_values, False)
-                time.sleep(PRIVATE_CONFIG['D9']['SAMPLE_INTERVAL'] - (time.time() - start_time))
+                time.sleep(sample_interval - (time.time() - start_time))
     except Exception:
         logging.exception('MAIN')
     try:
