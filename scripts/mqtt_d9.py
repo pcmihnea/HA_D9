@@ -17,13 +17,10 @@ PRIVATE_CONFIG = {}
 
 
 def mqtt_publish(topic, payload, retain):
-    try:
-        publish.single(hostname=PRIVATE_CONFIG['MQTT']['HOSTNAME'], port=1883, client_id='d9',
-                       auth={'username': PRIVATE_CONFIG['MQTT']['USERNAME'],
-                             'password': PRIVATE_CONFIG['MQTT']['PASSWORD']},
-                       topic=topic, payload=json.dumps(payload), retain=retain)
-    except Exception:
-        logging.exception('MQTT_PUBLISH')
+    publish.single(hostname=PRIVATE_CONFIG['MQTT']['HOSTNAME'], port=1883, client_id='d9',
+                   auth={'username': PRIVATE_CONFIG['MQTT']['USERNAME'],
+                         'password': PRIVATE_CONFIG['MQTT']['PASSWORD']},
+                   topic=topic, payload=json.dumps(payload), retain=retain)
 
 
 def mqtt_discovery(sn):
@@ -62,6 +59,7 @@ def mqtt_discovery(sn):
         dev_cfg['value_template'] = '{{ value_json.' + device + ' }}'
         dev_cfg['unique_id'] = sn + str(unique_id)
         unique_id += 1
+        time.sleep(0.1)
         mqtt_publish('homeassistant/sensor/D9_' + device + '/config', dev_cfg, True)
 
 
@@ -87,7 +85,10 @@ if __name__ == '__main__':
                         round(int(session.target.read16(PRIVATE_CONFIG['D9']['SENSORS'][sensor][INDEX_ADDR])) *
                               PRIVATE_CONFIG['D9']['SENSORS'][sensor][INDEX_SCALE],
                               PRIVATE_CONFIG['D9']['SENSORS'][sensor][INDEX_DECIMALS])
-                mqtt_publish('homeassistant/sensor/D9/state', sensor_values, False)
+                try:
+                    mqtt_publish('homeassistant/sensor/D9/state', sensor_values, False)
+                except Exception:
+                    logging.exception('MQTT_PUBLISH')
                 time.sleep(sample_interval - (time.time() - start_time))
     except Exception:
         logging.exception('MAIN')
