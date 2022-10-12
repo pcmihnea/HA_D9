@@ -29,7 +29,7 @@ def mqtt_discovery(sn):
                "value_template": '',
                "device_class": '',
                "unit_of_measurement": '',
-               "expire_after": sample_interval * 2}
+               "expire_after": sample_interval * 4}
     unique_id = 0
     for device in PRIVATE_CONFIG['D9']['SENSORS'].keys():
         if 'TEMP' == device:
