@@ -28,6 +28,7 @@ def mqtt_discovery(sn):
                "state_topic": 'homeassistant/sensor/D9/state',
                "value_template": '',
                "device_class": '',
+               "state_class": 'measurement',
                "unit_of_measurement": '',
                "expire_after": sample_interval * 4}
     unique_id = 0
